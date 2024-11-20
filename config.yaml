@@ -1,0 +1,10 @@
+datasets:
+  gsm8k: "data/gsm8k/"
+  math: "data/math/"
+  tutoreval: "data/tutoreval/"
+
+models:
+  llama: "http://api.llama.com"
+  ethel: "http://api.ethel.com"
+
+output_dir: "results/"
