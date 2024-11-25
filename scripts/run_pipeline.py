@@ -1,6 +1,6 @@
 import argparse
 import random
-
+import tqdm
 from datasets.base_dataset import BaseDataset, Message
 from datasets.gsm8k_dataset import GSM8K
 from datasets.math_dataset import MATH
@@ -69,10 +69,15 @@ if __name__ == '__main__':
     recorder = Recorder(config.get_records_path())
 
     i = 0
-    for ex in eval_task:
+
+    is_correct_labels = []
+
+    for ex in tqdm.tqdm(eval_task, total=min(len(eval_task), args.limit)):
         resp = model.generate(ex.messages)
         generated_answer = eval_task.extract_answer(resp.content)
         is_correct = eval_task.is_correct(ex, generated_answer)
+
+        is_correct_labels.append(is_correct)
 
         # Record the iteration data
         recorder.record({
@@ -86,5 +91,8 @@ if __name__ == '__main__':
         i += 1
         if args.limit is not None and i >= args.limit:
             break
+
+    print(f"Evaluated model {args.model} on dataset {args.dataset} with {len(is_correct_labels)} examples:")
+    print(f"Accuracy: {sum(is_correct_labels) / len(is_correct_labels)}")
 
     recorder.save('evaluation_records.json')
