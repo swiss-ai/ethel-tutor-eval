@@ -66,12 +66,6 @@ if __name__ == '__main__':
 
     model = model_class()
 
-    resp = model.generate(messages=[
-        Message(
-            role="user",
-            content="What is the derivative of x ** 2 + 5 * x + 3?")
-    ])
-
     recorder = Recorder(config.get_records_path())
 
     i = 0
