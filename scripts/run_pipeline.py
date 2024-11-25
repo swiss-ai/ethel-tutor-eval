@@ -4,6 +4,8 @@ import random
 from datasets.base_dataset import BaseDataset
 from datasets.gsm8k_dataset import GSM8K
 from datasets.math_dataset import MATH
+from evalutaion.gsm8k_task import GSM8KNShot
+from evalutaion.math_task import MATHFewShot
 from utils.config import Config
 
 if __name__ == '__main__':
@@ -40,6 +42,13 @@ if __name__ == '__main__':
     dataset.load()
 
     # Run Dataset Evaluation
-    for ex in dataset:
-        print(ex)
+    eval_task_class = {
+        'GSM8K': GSM8KNShot,
+        'MATH': MATHFewShot
+    }
+
+    eval_task = eval_task_class[args.dataset](dataset)
+
+    for sample in eval_task:
+        print(sample)
         break
