@@ -1,14 +1,9 @@
+import io
+import os
 import re
 import signal
+import tarfile
 from typing import Dict, List, Optional
-
-import datasets
-
-
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 try:
     import sympy
@@ -18,6 +13,48 @@ except ModuleNotFoundError:
         "`sympy` is required for generating translation task prompt templates. \
 please install sympy via pip install lm-eval[math] or pip install -e .[math]",
     )
+
+import logging
+
+import requests
+
+from datasets.base_dataset import BaseDataset
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class MATH(BaseDataset):
+
+    def _config_name(self) -> str:
+        return 'math'
+
+    def download(self):
+        dataset_path = self._config.get_dataset_path(self._config_name())
+
+        if os.path.exists(dataset_path):
+            logger.info(f"Dataset MATH already downloaded")
+            return
+
+        os.makedirs(dataset_path, exist_ok=True)
+
+        logger.info("Downloading MATH dataset")
+        dataset_url = 'https://people.eecs.berkeley.edu/~hendrycks/MATH.tar'
+
+        response = requests.get(dataset_url)
+        response.raise_for_status()
+
+        # Extracting the tar file content
+        with tarfile.open(fileobj=io.BytesIO(response.content), mode='r:') as tar_ref:
+            tar_ref.extractall(path=dataset_path)
+
+        logger.info("Downloaded and extracted MATH dataset!")
+
+    def prompt(self) -> str:
+        pass
+
+    def __iter__(self):
+        pass
 
 
 # taken from
@@ -109,7 +146,7 @@ def last_boxed_only_string(string: str) -> Optional[str]:
     if right_brace_idx is None:
         retval = None
     else:
-        retval = string[idx : right_brace_idx + 1]
+        retval = string[idx: right_brace_idx + 1]
 
     return retval
 
@@ -118,14 +155,14 @@ def remove_boxed(s: str) -> str:
     if "\\boxed " in s:
         left = "\\boxed "
         assert s[: len(left)] == left
-        return s[len(left) :]
+        return s[len(left):]
 
     left = "\\boxed{"
 
     assert s[: len(left)] == left
     assert s[-1] == "}"
 
-    return s[len(left) : -1]
+    return s[len(left): -1]
 
 
 class timeout:
@@ -154,9 +191,9 @@ def is_equiv(x1: str, x2: str) -> bool:
                 parsed_x1 = parse_latex(x1)
                 parsed_x2 = parse_latex(x2)
             except (
-                sympy.parsing.latex.errors.LaTeXParsingError,
-                sympy.SympifyError,
-                TypeError,
+                    sympy.parsing.latex.errors.LaTeXParsingError,
+                    sympy.SympifyError,
+                    TypeError,
             ):
                 logger.debug(f"couldn't parse one of {x1} or {x2}")
                 return False

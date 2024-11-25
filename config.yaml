@@ -1,7 +1,7 @@
 datasets:
-  gsm8k: "data/gsm8k/"
-  math: "data/math/"
-  tutoreval: "data/tutoreval/"
+  gsm8k: "gsm8k/"
+  math: "math/"
+  tutoreval: "tutoreval/"
 
 models:
   llama: "http://api.llama.com"
