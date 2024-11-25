@@ -50,7 +50,7 @@ class MATH(BaseDataset):
 
         logger.info("Downloaded and extracted MATH dataset!")
 
-    def prompt(self) -> str:
+    def load(self):
         pass
 
     def __iter__(self):

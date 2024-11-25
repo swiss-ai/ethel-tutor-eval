@@ -1,5 +1,5 @@
 import argparse
-import os.path
+import random
 
 from datasets.base_dataset import BaseDataset
 from datasets.gsm8k_dataset import GSM8K
@@ -7,6 +7,8 @@ from datasets.math_dataset import MATH
 from utils.config import Config
 
 if __name__ == '__main__':
+    random.seed(239)
+
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
     parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH")
@@ -34,4 +36,10 @@ if __name__ == '__main__':
     dataset: BaseDataset = dataset_class(config)
     dataset.download()
 
+    # Load data to the RAM
+    dataset.load()
+
     # Run Dataset Evaluation
+    for ex in dataset:
+        print(ex)
+        break
