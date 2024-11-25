@@ -8,3 +8,4 @@ models:
   ethel: "http://api.ethel.com"
 
 output_dir: "results/"
+record_dir: "records/"

@@ -48,6 +48,9 @@ class GSM8KNShot(EvalTask):
         question_message = Message(role="user", content=self._question_prompt(question))
         return n_shot_messages + [question_message]
 
+    def is_correct(self, sample: EvalSample, answer: str) -> bool:
+        return self.extract_answer(sample.target) == answer
+
     @classmethod
     def extract_answer(cls, answer: str) -> str:
         match = cls.ANS_RE.search(answer)

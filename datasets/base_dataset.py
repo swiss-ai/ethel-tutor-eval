@@ -39,6 +39,9 @@ class Message:
     role: str
     content: str
 
+    def to_dict(self) -> dict:
+        return dataclasses.asdict(self)
+
 
 @dataclasses.dataclass
 class EvalSample:
