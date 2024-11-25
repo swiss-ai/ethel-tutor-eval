@@ -1,27 +1,31 @@
-Proposed structure:
+# Ethel Tutor Eval
 
-llm_evaluation_pipeline/
-├── data/                    # Dataset handling
-│   ├── gsm8k/
-│   ├── math/
-│   └── tutoreval/
-├── models/                  # LLM interaction layer
-│   ├── base_model.py        # Abstract base class for LLMs
-│   ├── llama_model.py       # Llama-specific implementation
-│   └── ethel_model.py       # Ethel-specific implementation
-├── evaluation/              # Evaluation pipeline
-│   ├── metrics.py           # Custom metrics implementation
-│   ├── evaluator.py         # Core evaluation logic
-│   └── utils.py             # Helper functions
-├── notebooks/               # For exploratory data analysis
-│   └── data_preparation.ipynb
-├── tests/                   # Unit and integration tests
-│   ├── test_data_loaders.py
-│   ├── test_model_inference.py
-│   └── test_evaluation.py
-├── scripts/                 # Command-line tools
-│   ├── run_pipeline.py      # Run entire evaluation pipeline
-│   └── download_datasets.py # Helper for fetching datasets
-├── requirements.txt         # Python dependencies
-├── config.yaml              # Configurations (paths, hyperparams, etc.)
-└── README.md                # Project documentation
+This repository contains small framework for evaluating Ethel on education-specific benchmarks.
+
+
+## User guide
+
+Use the following command with the `dataset` and `model` command line arguments to run the evaluation
+
+```bash
+
+python3 -m scripts.run_pipeline --dataset=MATH --model=Ethel
+```
+
+## Datasets
+
+Currently, our evaluation pipeline supports the following datasets:
+
+- [GSM8K](https://github.com/openai/grade-school-math)
+- [MATH](https://github.com/hendrycks/math)
+
+
+### Authors:
+
+This work was done as part of the ML4Science project at CS-433 course at EPFL.
+
+The main contributors are:
+- Kamel Charaf
+- Ivan Pavlov
+- Michele Smaldone
+
