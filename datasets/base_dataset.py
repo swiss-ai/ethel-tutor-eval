@@ -1,3 +1,4 @@
+import dataclasses
 from abc import ABC, abstractmethod
 
 from utils.config import Config
@@ -17,11 +18,16 @@ class BaseDataset(ABC):
         pass
 
     @abstractmethod
-    def prompt(self) -> str:
-        """Return prompt for dataset"""
+    def load(self):
+        """Load dataset from local storage"""
         pass
 
     @abstractmethod
     def __iter__(self):
         """Iterate over dataset"""
         pass
+
+@dataclasses.dataclass
+class Message:
+    role: str
+    content: str
