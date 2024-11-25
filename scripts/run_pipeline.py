@@ -1,11 +1,13 @@
 import argparse
 import random
 
-from datasets.base_dataset import BaseDataset
+from datasets.base_dataset import BaseDataset, Message
 from datasets.gsm8k_dataset import GSM8K
 from datasets.math_dataset import MATH
 from evalutaion.gsm8k_task import GSM8KNShot
 from evalutaion.math_task import MATHFewShot
+from models.ethel import EthelModel
+from models.ollama import OLlamaModel
 from utils.config import Config
 
 if __name__ == '__main__':
@@ -14,7 +16,7 @@ if __name__ == '__main__':
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
     parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH")
-    parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama")
+    parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, OLlama")
 
     args = parser.parse_args()
 
@@ -49,6 +51,23 @@ if __name__ == '__main__':
 
     eval_task = eval_task_class[args.dataset](dataset)
 
-    for sample in eval_task:
-        print(sample)
-        break
+
+    models = {
+        'Ethel': EthelModel,
+        'OLlama': OLlamaModel
+    }
+
+    try:
+        model_class = models[args.model]
+    except KeyError:
+        raise ValueError(f"Invalid model: {args.model}. Supported models: {list(models.keys())}")
+
+    model = model_class()
+
+    resp = model.generate(messages=[
+        Message(
+            role="user",
+            content="What is the derivative of x ** 2 + 5 * x + 3?")
+    ])
+
+    print(resp)
