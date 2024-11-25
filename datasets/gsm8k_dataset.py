@@ -1,15 +1,13 @@
 import io
 import os
-import random
-import re
 import logging
 import shutil
 import zipfile
-from typing import List, Iterator
+from typing import List
 
 import requests
 
-from datasets.base_dataset import BaseDataset, Message
+from datasets.base_dataset import BaseDataset
 from utils.config import Config
 from utils.read_utils import read_jsonl
 
@@ -26,11 +24,11 @@ class GSM8K(BaseDataset):
         # store idx shuffle, unique for the instance, to use as n-shot learning examples
         self._train_idx_shuffle = []
 
-    def _config_name(self) -> str:
+    def config_name(self) -> str:
         return "gsm8k"
 
     def download(self):
-        dataset_path = self._config.get_dataset_path(self._config_name())
+        dataset_path = self._config.get_dataset_path(self.config_name())
 
         if os.path.exists(dataset_path):
             logger.info(f"Dataset GSM8k already downloaded")
@@ -65,74 +63,12 @@ class GSM8K(BaseDataset):
         logger.info("Downloaded GSM8k dataset!")
 
     def load(self):
-        dataset_path = self._config.get_dataset_path(self._config_name())
+        dataset_path = self._config.get_dataset_path(self.config_name())
         self._test_samples = read_jsonl(os.path.join(dataset_path, 'test.jsonl'))
         self._train_samples = read_jsonl(os.path.join(dataset_path, 'train.jsonl'))
 
-    @staticmethod
-    def _question_prompt(question: str):
-        instruction = """
-         Let's think step by step. At the end, you MUST write the answer as an integer after '####'.
-        """
+    def get_test_samples(self) -> List:
+        return self._test_samples
 
-        return f"Question: {question} {instruction}"
-
-    def _generate_n_shot_messages(self, question: str, n: int = 8) -> List[Message]:
-        if len(self._train_idx_shuffle) == 0:
-            train_idx = list(range(len(self._train_samples)))
-            random.shuffle(train_idx)
-            self._train_idx_shuffle = train_idx
-
-        n = min(n, len(self._train_samples))
-
-        n_shot_samples = [self._train_samples[i] for i in self._train_idx_shuffle[:n]]
-
-        n_shot_messages = []
-
-        for sample in n_shot_samples:
-            question_content = f"Question: {sample['question']}"
-            n_shot_messages.append(Message(role="user", content=question_content))
-
-            answer_content = f"Answer: {sample['answer']}"
-            n_shot_messages.append(Message(role="assistant", content=answer_content))
-
-        question_message = Message(role="user", content=self._question_prompt(question))
-        return n_shot_messages + [question_message]
-
-    def __iter__(self) -> Iterator[List[Message]]:
-        for ex in self._test_samples:
-            n_shot = self._generate_n_shot_messages(ex['question'], n=8)
-            yield n_shot
-
-
-
-def get_examples(split):
-    path = os.path.join("data/", f"{split}.jsonl")
-    examples = read_jsonl(path)
-
-    for ex in examples:
-        ex.update(question=ex["question"] + "\n")
-        ex.update(answer=ex["answer"] + "<|endoftext|>")
-
-    print(f"{len(examples)} {split} examples")
-    return examples
-
-
-ANS_RE = re.compile(r"#### (\-?[0-9\.\,]+)")
-INVALID_ANS = "[invalid]"
-
-
-def extract_answer(completion):
-    match = ANS_RE.search(completion)
-    if match:
-        match_str = match.group(1).strip()
-        match_str = match_str.replace(",", "")
-        return match_str
-    else:
-        return INVALID_ANS
-
-
-def is_correct(model_completion, gt_example):
-    gt_answer = extract_answer(gt_example["answer"])
-    assert gt_answer != INVALID_ANS
-    return extract_answer(model_completion) == gt_answer
+    def get_train_samples(self) -> List:
+        return self._train_samples

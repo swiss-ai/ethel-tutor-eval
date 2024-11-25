@@ -1,5 +1,6 @@
 import dataclasses
 from abc import ABC, abstractmethod
+from typing import List
 
 from utils.config import Config
 
@@ -9,7 +10,7 @@ class BaseDataset(ABC):
         self._config = config
 
     @abstractmethod
-    def _config_name(self) -> str:
+    def config_name(self) -> str:
         """Name of dataset as used in the config"""
 
     @abstractmethod
@@ -23,11 +24,24 @@ class BaseDataset(ABC):
         pass
 
     @abstractmethod
-    def __iter__(self):
-        """Iterate over dataset"""
+    def get_test_samples(self) -> List:
+        """Get test samples for evaluation"""
         pass
+
+    @abstractmethod
+    def get_train_samples(self) -> List:
+        """Get train samples for n-shot evaluating"""
+        pass
+
 
 @dataclasses.dataclass
 class Message:
     role: str
     content: str
+
+
+@dataclasses.dataclass
+class EvalSample:
+    messages: List[Message]
+    target: str
+    description: str = ""
