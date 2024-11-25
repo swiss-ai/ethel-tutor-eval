@@ -4,11 +4,13 @@ import random
 from datasets.base_dataset import BaseDataset, Message
 from datasets.gsm8k_dataset import GSM8K
 from datasets.math_dataset import MATH
+from evalutaion.base_eval_task import EvalTask
 from evalutaion.gsm8k_task import GSM8KNShot
 from evalutaion.math_task import MATHFewShot
 from models.ethel import EthelModel
-from models.ollama import OLlamaModel
+from models.ollama import OllamaModel
 from utils.config import Config
+from utils.recorder import Recorder
 
 if __name__ == '__main__':
     random.seed(239)
@@ -16,7 +18,8 @@ if __name__ == '__main__':
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
     parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH")
-    parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, OLlama")
+    parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama")
+    parser.add_argument("--limit", type=int, default=None, help="Limit the number of iterations")
 
     args = parser.parse_args()
 
@@ -49,12 +52,11 @@ if __name__ == '__main__':
         'MATH': MATHFewShot
     }
 
-    eval_task = eval_task_class[args.dataset](dataset)
-
+    eval_task: EvalTask = eval_task_class[args.dataset](dataset)
 
     models = {
         'Ethel': EthelModel,
-        'OLlama': OLlamaModel
+        'Ollama': OllamaModel
     }
 
     try:
@@ -70,4 +72,25 @@ if __name__ == '__main__':
             content="What is the derivative of x ** 2 + 5 * x + 3?")
     ])
 
-    print(resp)
+    recorder = Recorder(config.get_records_path())
+
+    i = 0
+    for ex in eval_task:
+        resp = model.generate(ex.messages)
+        generated_answer = eval_task.extract_answer(resp.content)
+        is_correct = eval_task.is_correct(ex, generated_answer)
+
+        # Record the iteration data
+        recorder.record({
+            "input": [m.to_dict() for m in ex.messages],
+            "target_answer": ex.target,
+            "response": resp.content,
+            "generated_answer": generated_answer,
+            "is_correct": is_correct,
+        })
+
+        i += 1
+        if args.limit is not None and i >= args.limit:
+            break
+
+    recorder.save('evaluation_records.json')

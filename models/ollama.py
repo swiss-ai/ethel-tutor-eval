@@ -6,7 +6,7 @@ from datasets.base_dataset import Message
 from models.base_model import BaseModel
 
 
-class OLlamaModel(BaseModel):
+class OllamaModel(BaseModel):
     def __init__(self, ollama_api: str = "http://localhost:11434/api/chat", model_name: str = "llama3.2"):
         self._ollama_api = ollama_api
         self._model = model_name
