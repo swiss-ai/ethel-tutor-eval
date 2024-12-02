@@ -42,7 +42,6 @@ class TutorEval(BaseDataset):
     def load(self):
         dataset_path = self._config.get_dataset_path(self.config_name())
         self._test_samples = load_from_disk(dataset_path)
-        print("After load: ", len(self._test_samples))
         #self._train_samples = read_jsonl(os.path.join(dataset_path, 'train.jsonl'))
 
     def get_test_samples(self) -> List:

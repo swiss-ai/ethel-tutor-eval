@@ -100,7 +100,6 @@ if __name__ == '__main__':
     recorder = Recorder(config.get_records_path())
 
     i = 0
-    print(len(eval_task))
     all_grades = []
     for ex in tqdm.tqdm(eval_task, total=len(eval_task)):
         tutor_response = model.generate(ex.messages)

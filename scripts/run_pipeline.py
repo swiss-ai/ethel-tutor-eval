@@ -2,15 +2,23 @@ import argparse
 import random
 import tqdm
 import sys
-sys.path.append(".")
+import os
+parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+sys.path.append(parent_dir)
+
+## if you are in scripts folder
+os.chdir(parent_dir)
 from our_datasets.base_dataset import BaseDataset, Message
 from our_datasets.gsm8k_dataset import GSM8K
 from our_datasets.math_dataset import MATH
+from our_datasets.mgsm_dataset import MGSM
 from evaluation.base_eval_task import EvalTask
 from evaluation.gsm8k_task import GSM8KNShot
+from evaluation.mgsm_task import MGSMNShot
 from evaluation.math_task import MATHFewShot
 from models.ethel import EthelModel
 from models.ollama import OllamaModel
+from models.smol import SmolModel
 from utils.config import Config
 from utils.recorder import Recorder
 
@@ -19,9 +27,10 @@ if __name__ == '__main__':
 
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
-    parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH")
+    parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH, MGSM")
     parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama")
     parser.add_argument("--limit", type=int, default=None, help="Limit the number of iterations")
+    parser.add_argument("--n_shot", type=int, default=8, help="Number of n-shot samples")
 
     args = parser.parse_args()
 
@@ -33,7 +42,8 @@ if __name__ == '__main__':
     # Choose dataset class to work with
     datasets = {
         'GSM8K': GSM8K,
-        'MATH': MATH
+        'MATH': MATH,
+        'MGSM': MGSM,
     }
 
     try:
@@ -51,14 +61,16 @@ if __name__ == '__main__':
     # Run Dataset Evaluation
     eval_task_class = {
         'GSM8K': GSM8KNShot,
-        'MATH': MATHFewShot
+        'MATH': MATHFewShot,
+        'MGSM': MGSMNShot,
     }
 
-    eval_task: EvalTask = eval_task_class[args.dataset](dataset)
+    eval_task: EvalTask = eval_task_class[args.dataset](dataset, args.n_shot)
 
     models = {
         'Ethel': EthelModel,
-        'Ollama': OllamaModel
+        'Ollama': OllamaModel,
+        'Smol': SmolModel,
     }
 
     try:
