@@ -10,7 +10,7 @@ import logging
 
 import requests
 
-from datasets.base_dataset import BaseDataset
+from our_datasets.base_dataset import BaseDataset
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

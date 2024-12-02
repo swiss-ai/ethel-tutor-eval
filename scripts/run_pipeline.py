@@ -1,12 +1,14 @@
 import argparse
 import random
 import tqdm
-from datasets.base_dataset import BaseDataset, Message
-from datasets.gsm8k_dataset import GSM8K
-from datasets.math_dataset import MATH
-from evalutaion.base_eval_task import EvalTask
-from evalutaion.gsm8k_task import GSM8KNShot
-from evalutaion.math_task import MATHFewShot
+import sys
+sys.path.append(".")
+from our_datasets.base_dataset import BaseDataset, Message
+from our_datasets.gsm8k_dataset import GSM8K
+from our_datasets.math_dataset import MATH
+from evaluation.base_eval_task import EvalTask
+from evaluation.gsm8k_task import GSM8KNShot
+from evaluation.math_task import MATHFewShot
 from models.ethel import EthelModel
 from models.ollama import OllamaModel
 from utils.config import Config

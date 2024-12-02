@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Iterator
-
-from datasets.base_dataset import BaseDataset, EvalSample
+import os
+import sys
+from our_datasets.base_dataset import BaseDataset, EvalSample
 
 
 class EvalTask(ABC):
@@ -16,8 +17,8 @@ class EvalTask(ABC):
     def extract_answer(cls, answer: str) -> str:
         pass
 
-    def is_correct(self, sample: EvalSample, answer: str) -> bool:
-        return answer == sample.target
+    #def is_correct(self, sample: EvalSample, answer: str) -> bool:
+    #    return answer == sample.target
 
     def __len__(self):
         return len(self.dataset.get_test_samples())

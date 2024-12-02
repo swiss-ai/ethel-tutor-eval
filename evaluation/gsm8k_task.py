@@ -1,9 +1,11 @@
 import random
 import re
 from typing import Iterator, List
+import sys
+import os
+from evaluation.base_eval_task import EvalTask
+from our_datasets.base_dataset import BaseDataset, Message, EvalSample
 
-from datasets.base_dataset import BaseDataset, Message, EvalSample
-from evalutaion.base_eval_task import EvalTask
 
 
 class GSM8KNShot(EvalTask):
