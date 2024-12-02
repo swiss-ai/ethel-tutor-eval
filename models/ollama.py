@@ -2,7 +2,7 @@ from typing import List
 
 import requests
 
-from datasets.base_dataset import Message
+from our_datasets.base_dataset import Message
 from models.base_model import BaseModel
 
 

@@ -7,7 +7,7 @@ from typing import List
 
 import requests
 
-from datasets.base_dataset import BaseDataset
+from our_datasets.base_dataset import BaseDataset
 from utils.config import Config
 from utils.read_utils import read_jsonl
 

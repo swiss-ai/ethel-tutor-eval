@@ -4,8 +4,8 @@ import logging
 
 from typing import Iterator, Optional, List
 
-from datasets.base_dataset import EvalSample, BaseDataset, Message
-from evalutaion.base_eval_task import EvalTask
+from our_datasets.base_dataset import EvalSample, BaseDataset, Message
+from evaluation.base_eval_task import EvalTask
 
 try:
     import sympy
