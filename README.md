@@ -9,7 +9,7 @@ Use the following command with the `dataset` and `model` command line arguments 
 
 ```bash
 
-python3 -m scripts.run_pipeline --dataset=MATH --model=Ethel
+python3 -m scripts.run_pipeline --dataset=GSM8K --model=Ollama
 ```
 
 ## Datasets
