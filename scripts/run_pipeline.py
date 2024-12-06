@@ -1,4 +1,5 @@
 import argparse
+import os
 import random
 import tqdm
 import sys
@@ -29,6 +30,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
     parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH, MGSM")
     parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama")
+    parser.add_argument("--model_name", required=False, help="The model name to use for model API")
     parser.add_argument("--limit", type=int, default=None, help="Limit the number of iterations")
     parser.add_argument("--n_shot", type=int, default=8, help="Number of n-shot samples")
 
@@ -73,27 +75,39 @@ if __name__ == '__main__':
         'Smol': SmolModel,
     }
 
+    model_args_dict = {
+        'Ethel': {
+            'model_name': args.model_name
+        },
+        'Ollama': {
+
+        }
+    }
+
     try:
         model_class = models[args.model]
+        model_args = model_args_dict[args.model]
     except KeyError:
         raise ValueError(f"Invalid model: {args.model}. Supported models: {list(models.keys())}")
 
+    model = model_class(**model_args)
 
-    model_names = {
-        "Ethel": "swissai/ethel-70b-tutorchat",
-        "Ollama": "llama3.2",
-        "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct"
-    }
-
-    model = model_class(model_name = model_names[args.model])
-
-    recorder = Recorder(config.get_records_path())
+    recorder = Recorder(
+        output_dir=config.get_records_path(),
+        dataset_name=args.dataset,
+        eval_task_name=eval_task.__class__.__name__,
+        model_name=f"{args.model}/{args.model_name}" if args.model_name else f"{args.model}"
+    )
 
     i = 0
 
     is_correct_labels = []
 
-    for ex in tqdm.tqdm(eval_task, total=min(len(eval_task), args.limit)):
+    total_len = len(eval_task)
+    if args.limit is not None:
+        total_len = min(args.limit, total_len)
+
+    for ex in tqdm.tqdm(eval_task, total=total_len):
         resp = model.generate(ex.messages)
         generated_answer = eval_task.extract_answer(resp.content)
         is_correct = eval_task.is_correct(ex, generated_answer)
