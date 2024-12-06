@@ -123,6 +123,10 @@ if __name__ == '__main__':
                 "input": [m.to_dict() for m in ex.messages],
                 "target_answer": ex.target
             })
+            i += 1
+            if args.limit is not None and i >= args.limit:
+                break
+            continue
         generated_answer = eval_task.extract_answer(resp.content)
         is_correct = eval_task.is_correct(ex, generated_answer)
 
