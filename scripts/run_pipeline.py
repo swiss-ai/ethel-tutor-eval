@@ -118,7 +118,11 @@ if __name__ == '__main__':
             resp = model.generate(ex.messages)
         except:
             logger.error(f"Failed to generate response for sample {i}")
-            failed_samples.append(i)
+            failed_samples.append({
+                "sample_id": i,
+                "input": [m.to_dict() for m in ex.messages],
+                "target_answer": ex.target
+            })
         generated_answer = eval_task.extract_answer(resp.content)
         is_correct = eval_task.is_correct(ex, generated_answer)
 
