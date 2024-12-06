@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class Recorder:
@@ -24,3 +24,10 @@ class Recorder:
 
         with open(output_path, 'w') as f:
             json.dump(self.records, f, indent=4)
+
+    def save_failed(self, failed_records: List, filename: str):
+        output_path = os.path.join(self.output_dir, self.dataset_name, self.eval_task_name, self.model_name, filename)
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        with open(output_path, 'w') as f:
+            json.dump(failed_records, f, indent=4)

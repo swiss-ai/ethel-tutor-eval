@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import random
 import tqdm
@@ -22,6 +23,10 @@ from models.ollama import OllamaModel
 from models.smol import SmolModel
 from utils.config import Config
 from utils.recorder import Recorder
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     random.seed(239)
@@ -102,13 +107,18 @@ if __name__ == '__main__':
     i = 0
 
     is_correct_labels = []
+    failed_samples = []
 
     total_len = len(eval_task)
     if args.limit is not None:
         total_len = min(args.limit, total_len)
 
     for ex in tqdm.tqdm(eval_task, total=total_len):
-        resp = model.generate(ex.messages)
+        try:
+            resp = model.generate(ex.messages)
+        except:
+            logger.error(f"Failed to generate response for sample {i}")
+            failed_samples.append(i)
         generated_answer = eval_task.extract_answer(resp.content)
         is_correct = eval_task.is_correct(ex, generated_answer)
 
@@ -123,6 +133,10 @@ if __name__ == '__main__':
             "is_correct": is_correct
         })
 
+        if i % 100 == 0:
+            recorder.save('evaluation_records.json')
+            recorder.save_failed(failed_samples, 'failed_evaluation_records.json')
+
         i += 1
         if args.limit is not None and i >= args.limit:
             break
@@ -131,3 +145,4 @@ if __name__ == '__main__':
     print(f"Accuracy: {sum(is_correct_labels) / len(is_correct_labels)}")
 
     recorder.save('evaluation_records.json')
+    recorder.save_failed(failed_samples, 'failed_evaluation_records.json')
