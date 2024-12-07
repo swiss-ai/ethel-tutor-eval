@@ -14,7 +14,7 @@ class EvalTask(ABC):
         pass
 
     @classmethod
-    def extract_answer(cls, answer: str) -> str:
+    def extract_answer(cls, answer: str, language: str = "") -> str:
         pass
 
     #def is_correct(self, sample: EvalSample, answer: str) -> bool:

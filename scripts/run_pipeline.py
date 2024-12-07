@@ -78,7 +78,14 @@ if __name__ == '__main__':
     except KeyError:
         raise ValueError(f"Invalid model: {args.model}. Supported models: {list(models.keys())}")
 
-    model = model_class()
+
+    model_names = {
+        "Ethel": "swissai/ethel-70b-tutorchat",
+        "Ollama": "llama3.2",
+        "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct"
+    }
+
+    model = model_class(model_name = model_names[args.model])
 
     recorder = Recorder(config.get_records_path())
 
@@ -99,7 +106,7 @@ if __name__ == '__main__':
             "target_answer": ex.target,
             "response": resp.content,
             "generated_answer": generated_answer,
-            "is_correct": is_correct,
+            "is_correct": is_correct
         })
 
         i += 1

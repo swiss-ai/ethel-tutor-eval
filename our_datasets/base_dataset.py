@@ -1,6 +1,6 @@
 import dataclasses
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 import sys
 import os
 from utils.config import Config
@@ -49,3 +49,5 @@ class EvalSample:
     messages: List[Message]
     target: str
     description: str = ""
+    difficulty: str = ""
+    domain: str = ""

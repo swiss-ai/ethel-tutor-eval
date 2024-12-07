@@ -48,6 +48,9 @@ class EthelModel(BaseModel):
             }
             for message in messages
         ]
+        print(messages)
+        with open("records/message.json", "w") as f:
+            json.dump(messages, f)
         client = openai.Client(api_key=self._api_key, base_url="https://fmapi.swissai.cscs.ch")
         if self._constrained:
             response_format = {
