@@ -74,16 +74,16 @@ if __name__ == '__main__':
 
     eval_task: EvalTask = eval_task_class[args.dataset](dataset)
     models = {
-        'Ethel': EthelModel,
-        'Llama': EthelModel,
+        'Ethel-tutorchat': EthelModel,
+        'Ethel-magpie': EthelModel,
         'Ollama': OllamaModel,
         'Smol': SmolModel,
     }
 
 
     model_names = {
-        "Ethel": "swissai/ethel-70b-tutorchat",
-        "Llama": "swissai/ethel-70b-magpie",
+        "Ethel-tutorchat": "swissai/ethel-70b-tutorchat",
+        "Ethel-magpie": "swissai/ethel-70b-magpie",
         "Ollama": "llama3.2",
         "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct"
     }
@@ -108,11 +108,10 @@ if __name__ == '__main__':
         tutor_response = model.generate(ex.messages)
         grader_response, grades = eval_task.grade(ex, tutor_response, grader_model)
 
-        # Record the iteration data
         recorder.record({
             "input": [m.to_dict() for m in ex.messages],
             "key_points": ex.target,
-            "tutor_response": tutor_response,
+            "tutor_response": tutor_response.content,
             "grader_response": grader_response,
             "presentation": grades[0],
             "correctness": grades[1],

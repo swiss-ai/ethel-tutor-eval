@@ -69,7 +69,9 @@ if __name__ == '__main__':
 
     models = {
         'Ethel': EthelModel,
+        'Llama': EthelModel,
         'Ollama': OllamaModel,
+
         'Smol': SmolModel,
     }
 
@@ -81,6 +83,7 @@ if __name__ == '__main__':
 
     model_names = {
         "Ethel": "swissai/ethel-70b-tutorchat",
+        "Llama": "meta-llama/Meta-Llama-3.1-70B-Instruct",
         "Ollama": "llama3.2",
         "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct"
     }
@@ -101,6 +104,7 @@ if __name__ == '__main__':
         is_correct_labels.append(is_correct)
 
         # Record the iteration data
+        #
         recorder.record({
             "input": [m.to_dict() for m in ex.messages],
             "target_answer": ex.target,
