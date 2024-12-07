@@ -138,7 +138,9 @@ if __name__ == '__main__':
             "target_answer": ex.target,
             "response": resp.content,
             "generated_answer": generated_answer,
-            "is_correct": is_correct
+            "is_correct": is_correct,
+            "description": ex.description,
+            "index": i,
         })
 
         if i % 100 == 0:
