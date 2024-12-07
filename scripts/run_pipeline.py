@@ -7,7 +7,7 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 
 ## if you are in scripts folder
-os.chdir(parent_dir)
+# os.chdir(parent_dir)
 from our_datasets.base_dataset import BaseDataset, Message
 from our_datasets.gsm8k_dataset import GSM8K
 from our_datasets.math_dataset import MATH
