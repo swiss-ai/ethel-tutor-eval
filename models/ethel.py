@@ -42,7 +42,6 @@ class EthelModel(BaseModel):
             base_url="https://fmapi.swissai.cscs.ch",
             api_key=self._api_key,
         )
-
         response = client.chat.completions.create(
             model=self._model_name,
             messages=messages,

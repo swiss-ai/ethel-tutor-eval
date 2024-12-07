@@ -7,7 +7,6 @@ from evaluation.base_eval_task import EvalTask, NShotTask
 from our_datasets.base_dataset import BaseDataset, Message, EvalSample
 
 
-
 class MGSMNShot(NShotTask):
     ANS_RE = re.compile(r"#### (-?[0-9.,]+)")
     INVALID_ANS = "[invalid]"
@@ -18,6 +17,7 @@ class MGSMNShot(NShotTask):
         if dataset.config_name() != 'mgsm':
             raise ValueError("Can't run MGSM N-shot evaluation on non-MGSM dataset")
 
+        self.n = n
         # store n train samples to keep the same prompt for all test samples in this task
         self._n_shot_samples = []
 

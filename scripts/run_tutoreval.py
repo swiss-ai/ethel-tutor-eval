@@ -7,6 +7,7 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 
 ## if you are in scripts folder
+os.chdir(parent_dir)
 # os.chdir(parent_dir)
 
 from utils.config import Config
@@ -100,6 +101,7 @@ if __name__ == '__main__':
     except KeyError:
         raise ValueError(f"Invalid grader model: {args.grader_model}. Supported models: {list(models.keys())}")
 
+
     if args.model_name is None:
         model = model_class(model_name = model_names[args.model])
     else:
@@ -123,6 +125,10 @@ if __name__ == '__main__':
         tutor_response = model.generate(ex.messages)
         grader_response, grades = eval_task.grade(ex, tutor_response, grader_model)
 
+        recorder.record({
+            "input": [m.to_dict() for m in ex.messages],
+            "key_points": ex.target,
+            "tutor_response": tutor_response.content,
         # Record the iteration data
         recorder.record({
             "input": [m.to_dict() for m in ex.messages],

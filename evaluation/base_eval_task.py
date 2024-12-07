@@ -27,3 +27,4 @@ class NShotTask(EvalTask, ABC):
     def __init__(self, dataset: BaseDataset, n: int) -> None:
         super().__init__(dataset)
         self.n = n
+

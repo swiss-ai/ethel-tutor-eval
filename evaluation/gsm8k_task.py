@@ -3,7 +3,9 @@ import re
 from typing import Iterator, List
 import sys
 import os
+
 from evaluation.base_eval_task import EvalTask, NShotTask
+
 from our_datasets.base_dataset import BaseDataset, Message, EvalSample
 
 
@@ -18,6 +20,7 @@ class GSM8KNShot(NShotTask):
         if dataset.config_name() != 'gsm8k':
             raise ValueError("Can't run GSM8K N-shot evaluation on non-GSM8K dataset")
 
+        self.n = n
         # store n train samples to keep the same prompt for all test samples in this task
         self._n_shot_samples = []
 
