@@ -40,7 +40,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     config = Config(
-        config_path='config.yaml',
+        config_path='/home/smaldo/Desktop/machine_learning_CS-433/ethel-tutor-eval/config.yaml',
         dataset_dir='data'
     )
 
@@ -99,8 +99,14 @@ if __name__ == '__main__':
         raise ValueError(f"Invalid grader model: {args.grader_model}. Supported models: {list(models.keys())}")
 
     model = model_class(model_name = model_names[args.model])
-    grader_model = grader_model_class()
-    recorder = Recorder(config.get_records_path())
+    #grader_model = grader_model_class()
+    grader_model = grader_model_class(model_name=model_names[args.grader_model])  
+    
+    #    recorder = Recorder(config.get_records_path())
+    eval_task_name = args.dataset
+    model_name = args.model
+    output_dir = config.get_records_path()
+    recorder = Recorder("dataset","ss", model_name, output_dir)
 
     i = 0
     all_grades = []
@@ -112,7 +118,7 @@ if __name__ == '__main__':
         recorder.record({
             "input": [m.to_dict() for m in ex.messages],
             "key_points": ex.target,
-            "tutor_response": tutor_response,
+            "tutor_response": tutor_response.content,
             "grader_response": grader_response,
             "presentation": grades[0],
             "correctness": grades[1],
@@ -129,4 +135,4 @@ if __name__ == '__main__':
     print(f"Presentation: {sum([grade[0] for grade in all_grades])/len(all_grades)}")
     print(f"Correctness: {sum([grade[1] for grade in all_grades])/len(all_grades)}")
 
-    recorder.save('evaluation_records.json')
+    recorder.save('evaluation_records_tutor.json')

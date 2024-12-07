@@ -48,14 +48,14 @@ class TutorEvalTask(EvalTask):
             raise ValueError("Can't run TutorEval N-shot evaluation on non-TutorEval dataset")
         
         if closed_book:
-            with open("templates/closedbook_generation_template.txt", "r") as f:
+            with open("/home/smaldo/Desktop/machine_learning_CS-433/ethel-tutor-eval/templates/closedbook_generation_template.txt", "r") as f:
                 self._template = f.read()
-            with open("templates/closedbook_grading_template.txt", "r") as f:
+            with open("/home/smaldo/Desktop/machine_learning_CS-433/ethel-tutor-eval/templates/closedbook_grading_template.txt", "r") as f:
                 self._grading_template = f.read()
         else:
-            with open("templates/openbook_generation_template.txt", "r") as f:
+            with open("/home/smaldo/Desktop/machine_learning_CS-433/ethel-tutor-eval/templates/openbook_generation_template.txt", "r") as f:
                 self._template = f.read()
-            with open("templates/openbook_grading_template.txt", "r") as f:
+            with open("/home/smaldo/Desktop/machine_learning_CS-433/ethel-tutor-eval/templates/openbook_generation_template.txt", "r") as f:
                 self._grading_template = f.read()
     def __iter__(self) -> Iterator[EvalSample]:
         for ex in self.dataset.get_test_samples():

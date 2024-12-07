@@ -7,7 +7,7 @@ import openai
 from our_datasets.base_dataset import Message
 from models.base_model import BaseModel
 
-
+os.environ["SWISSAI_API"] = "sk-rc-XcyV-GtgecNFEEzOJRyxiw"
 class EthelModel(BaseModel):
     def __init__(self, model_name: Optional[str]):
         self._model_name = model_name if model_name is not None else "swissai/ethel-70b-pretrain"
