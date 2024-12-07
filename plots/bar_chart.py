@@ -16,7 +16,7 @@ def load_evaluation_data(file_path):
     }
 
 # Load all JSON files
-json_files = glob.glob('/home/smaldo/Desktop/machine_learning_CS-433/ethel-tutor-eval/plots/mean_scores_*.json')
+json_files = glob.glob('/home/smaldo/Desktop/machine_learning_CS-433/ethel-tutor-eval/plots/mean_difficulty_*.json')
 if not json_files:
     print("No JSON files found. Please check the directory and file pattern.")
 else:
