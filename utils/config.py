@@ -13,7 +13,7 @@ class Config:
             return yaml.safe_load(f)
 
     def get_dataset_path(self, dataset_name: str) -> str:
-        return os.path.join(self._dataset_dir, self._config['datasets'][dataset_name])
+        return os.path.join(self._dataset_dir, self._config['our_datasets'][dataset_name.lower()])
 
     def get_records_path(self) -> str:
         return self._config['record_dir']

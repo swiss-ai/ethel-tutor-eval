@@ -1,11 +1,14 @@
 import json
 import os
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class Recorder:
-    def __init__(self, output_dir: str):
+    def __init__(self, dataset_name: str, eval_task_name: str, model_name: str, output_dir: str):
         self.output_dir = output_dir
+        self.dataset_name = dataset_name
+        self.eval_task_name = eval_task_name
+        self.model_name = model_name
         os.makedirs(output_dir, exist_ok=True)
         self.records = []
 
@@ -13,5 +16,18 @@ class Recorder:
         self.records.append(data)
 
     def save(self, filename: str):
-        with open(os.path.join(self.output_dir, filename), 'w') as f:
+        output_path = os.path.join(self.output_dir, self.dataset_name, self.eval_task_name, self.model_name, filename)
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        print(
+            f"Saving records to {output_path}"
+        )
+
+        with open(output_path, 'w') as f:
             json.dump(self.records, f, indent=4)
+
+    def save_failed(self, failed_records: List, filename: str):
+        output_path = os.path.join(self.output_dir, self.dataset_name, self.eval_task_name, self.model_name, filename)
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        with open(output_path, 'w') as f:
+            json.dump(failed_records, f, indent=4)

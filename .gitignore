@@ -1,3 +1,4 @@
 /data
 *.key
 /records
+**/__pycache__/

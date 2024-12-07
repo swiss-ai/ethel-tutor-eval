@@ -1,11 +1,13 @@
-datasets:
+our_datasets:
   gsm8k: "gsm8k/"
   math: "math/"
   tutoreval: "tutoreval/"
+  mgsm: "mgsm/"
 
 models:
   llama: "http://api.llama.com"
   ethel: "http://api.ethel.com"
+  
 
 output_dir: "results/"
 record_dir: "records/"
