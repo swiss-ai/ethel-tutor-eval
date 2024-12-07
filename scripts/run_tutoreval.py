@@ -106,9 +106,7 @@ if __name__ == '__main__':
     all_grades = []
     for ex in tqdm.tqdm(eval_task, total=len(eval_task)):
         tutor_response = model.generate(ex.messages)
-        print(tutor_response)
         grader_response, grades = eval_task.grade(ex, tutor_response, grader_model)
-        print(grader_response)
 
         # Record the iteration data
         recorder.record({
