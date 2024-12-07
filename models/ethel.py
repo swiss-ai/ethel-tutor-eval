@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List
+from typing import List, Optional
 
 import openai
 
@@ -9,10 +9,9 @@ from models.base_model import BaseModel
 
 
 class EthelModel(BaseModel):
-    def __init__(self, model_name: str = "meta-llama/Llama-3.2-90B-Vision-Instruct", constrained: bool = False):
-        self._model_name = model_name
+    def __init__(self, model_name: Optional[str]):
+        self._model_name = model_name if model_name is not None else "swissai/ethel-70b-pretrain"
         self._api_key = self._get_api_key()
-        self._constrained = constrained
 
     @staticmethod
     def _get_api_key():
@@ -31,16 +30,6 @@ class EthelModel(BaseModel):
         return api_key
 
     def generate(self, messages: List[Message]) -> Message:
-        json_schema = json.dumps(
-            {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string", "pattern": "^[\\w]+$"},
-                    "population": {"type": "integer"},
-                },
-                "required": ["name", "population"],
-            }
-        )
         messages = [
             {
                 "role": message.role,
@@ -48,19 +37,16 @@ class EthelModel(BaseModel):
             }
             for message in messages
         ]
-        client = openai.Client(api_key=self._api_key, base_url="https://fmapi.swissai.cscs.ch")
-        if self._constrained:
-            response_format = {
-                "type": "json_schema",
-                "json_schema": {"name": "foo", "schema": json.loads(json_schema)},
-            }
-        else:
-            response_format = None
+
+        client = openai.Client(
+            base_url="https://fmapi.swissai.cscs.ch",
+            api_key=self._api_key,
+        )
         response = client.chat.completions.create(
             model=self._model_name,
             messages=messages,
-            response_format=response_format,
             stream=False,
+            timeout=120
         )
         content = response.choices[0].message.content
         return Message(role="assistant", content=content)

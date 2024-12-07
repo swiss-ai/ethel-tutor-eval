@@ -8,6 +8,7 @@ sys.path.append(parent_dir)
 
 ## if you are in scripts folder
 os.chdir(parent_dir)
+# os.chdir(parent_dir)
 
 from utils.config import Config
 from evaluation.gsm8k_task import GSM8KNShot
@@ -33,7 +34,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
     parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: TutorEval")
     parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama, Smol")
+    parser.add_argument("--model_name", required=False, help="The tutor model name to use for model API")
     parser.add_argument("--grader_model", required=True, help="The model to use for grading: Ethel, Ollama, Smol")
+    parser.add_argument("--grader_model_name", required=False, help="The grader model name to use for model API")
     parser.add_argument("--limit", type=int, default=None, help="Limit the number of iterations")
     parser.add_argument("--closed_book", required=False, default=True, help="True, if closed_book evaluation is desired, False if the open_book evaluation is desired")
     #parser.add_argument("--difficulty", required=False, help="The difficulty level of the question")
@@ -74,16 +77,16 @@ if __name__ == '__main__':
 
     eval_task: EvalTask = eval_task_class[args.dataset](dataset)
     models = {
-        'Ethel-tutorchat': EthelModel,
-        'Ethel-magpie': EthelModel,
+        'Ethel': EthelModel,
+        'Llama': EthelModel,
         'Ollama': OllamaModel,
         'Smol': SmolModel,
     }
 
 
     model_names = {
-        "Ethel-tutorchat": "swissai/ethel-70b-tutorchat",
-        "Ethel-magpie": "swissai/ethel-70b-magpie",
+        "Ethel": "swissai/ethel-70b-tutorchat",
+        "Llama": "swissai/ethel-70b-magpie",
         "Ollama": "llama3.2",
         "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct"
     }
@@ -98,9 +101,23 @@ if __name__ == '__main__':
     except KeyError:
         raise ValueError(f"Invalid grader model: {args.grader_model}. Supported models: {list(models.keys())}")
 
-    model = model_class(model_name = model_names[args.model])
-    grader_model = grader_model_class()
-    recorder = Recorder(config.get_records_path())
+
+    if args.model_name is None:
+        model = model_class(model_name = model_names[args.model])
+    else:
+        model = model_class(model_name = args.model_name)
+
+    if args.grader_model_name is None:
+        grader_model = grader_model_class()
+    else:
+        grader_model = grader_model_class(model_name = args.grader_model_name)
+
+    recorder = Recorder(
+        output_dir=config.get_records_path(),
+        dataset_name=args.dataset,
+        eval_task_name=eval_task.__class__.__name__,
+        model_name=f"{args.model}/{args.model_name}" if args.model_name else f"{args.model}"
+    )
 
     i = 0
     all_grades = []
@@ -112,6 +129,11 @@ if __name__ == '__main__':
             "input": [m.to_dict() for m in ex.messages],
             "key_points": ex.target,
             "tutor_response": tutor_response.content,
+        # Record the iteration data
+        recorder.record({
+            "input": [m.to_dict() for m in ex.messages],
+            "key_points": ex.target,
+            "tutor_response": tutor_response,
             "grader_response": grader_response,
             "presentation": grades[0],
             "correctness": grades[1],
