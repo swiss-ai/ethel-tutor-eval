@@ -7,8 +7,10 @@ from models.base_model import BaseModel
 
 
 class OllamaModel(BaseModel):
-    def __init__(self, ollama_api: str = "http://localhost:11434/api/chat", model_name: str = "llama3.2"):
+    def __init__(self,  model_name: str, ollama_api: str = "http://localhost:11434/api/chat"):
         self._ollama_api = ollama_api
+        if model_name is None:
+            raise ValueError("OllamaModel must have a model_name argument provided [llama3.2|smollm]")
         self._model = model_name
 
     def generate(self, messages: List[Message]) -> Message:
@@ -23,7 +25,7 @@ class OllamaModel(BaseModel):
         response = requests.post(
             "http://localhost:11434/api/chat",
             json={
-                "model": "llama3.2",
+                "model": self._model,
                 "messages": messages,
                 "stream": False
             }
