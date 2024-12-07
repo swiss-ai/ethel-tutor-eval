@@ -14,7 +14,7 @@ from our_datasets.base_dataset import BaseDataset, Message
 from our_datasets.gsm8k_dataset import GSM8K
 from our_datasets.math_dataset import MATH
 from our_datasets.mgsm_dataset import MGSM
-from evaluation.base_eval_task import EvalTask
+from evaluation.base_eval_task import EvalTask, NShotTask
 from evaluation.gsm8k_task import GSM8KNShot
 from evaluation.mgsm_task import MGSMNShot
 from evaluation.math_task import MATHFewShot
@@ -70,9 +70,12 @@ if __name__ == '__main__':
         'GSM8K': GSM8KNShot,
         'MATH': MATHFewShot,
         'MGSM': MGSMNShot,
-    }
+    }[args.dataset]
 
-    eval_task: EvalTask = eval_task_class[args.dataset](dataset, args.n_shot)
+    if issubclass(eval_task_class, NShotTask):
+        eval_task: EvalTask = eval_task_class(dataset, args.n_shot)
+    else:
+        eval_task: EvalTask = eval_task_class(dataset)
 
     models = {
         'Ethel': EthelModel,
