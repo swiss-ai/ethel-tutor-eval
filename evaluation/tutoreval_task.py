@@ -61,8 +61,8 @@ class TutorEvalTask(EvalTask):
         for ex in self.dataset.get_test_samples():
             query = self._template.replace("{{QUESTION}}", ex['question']).replace("{{CHAPTER}}", ex['chapter'])
             messages = [Message(role="user", content=query)]
-            description = f"{ex['difficulty']}|{ex['closed_book']}|{ex['answer_in_chapter']}|{ex['misleading_question']}|{ex['domain']}"
-            yield EvalSample(messages=messages, target=ex['key_points'], description=description)
+            description = f"{ex['closed_book']}|{ex['answer_in_chapter']}|{ex['misleading_question']}"
+            yield EvalSample(messages=messages, target=ex['key_points'], description=description, difficulty=ex['difficulty'], domain=ex['domain'])
 
     def _generate_n_shot_messages(self, question: str) -> List[Message]:
         pass

@@ -24,30 +24,42 @@ class MGSMNShot(EvalTask):
 
     def __iter__(self) -> Iterator[EvalSample]:
         for ex in self.dataset.get_test_samples():
-            n_shot = self._generate_n_shot_messages(ex['question'])
+            n_shot = self._generate_n_shot_messages(ex['question'], ex['language'])
             yield EvalSample(messages=n_shot, target=str(ex['answer_number']))
 
     @staticmethod
-    def _question_prompt(question: str):
-        instruction = """
-            Let's think step by step. At the end, you MUST write the answer as an integer after '####'.
-           """
+    def _question_prompt(question: str, language:str) -> str:
+        if language == "de":
+            instruction = "Denken Sie Schritt für Schritt. Am Ende schreiben Sie die Antwort als Ganzzahl nach dem: ####"
+            return f"Frage: {question} {instruction} "
+        elif language == "fr":
+            instruction = "Pensez étape par étape. À la fin, vous DEVEZ écrire la réponse en tant qu'entier après ####"
+            return f"Question : {question} {instruction} "
+        else:
+            raise ValueError("Invalid language")
 
-        return f"Question: {question} {instruction}"
-
-    def _generate_n_shot_messages(self, question: str) -> List[Message]:
+    def _generate_n_shot_messages(self, question: str, language:str) -> List[Message]:
         if len(self._n_shot_samples) == 0:
-            self._n_shot_samples = random.sample(self.dataset.get_train_samples(), self.n)
+            self._n_shot_samples = random.sample(self.dataset.get_train_samples(language), self.n)
 
+        
         n_shot_messages = []
         for sample in self._n_shot_samples:
-            question_content = f"Question: {sample['question']}"
-            n_shot_messages.append(Message(role="user", content=question_content))
+            if language == "de":
+                question_content = f"{sample['question']}"
+                n_shot_messages.append(Message(role="user", content=question_content))
 
-            answer_content = f"Answer: {sample['answer']}"
-            n_shot_messages.append(Message(role="assistant", content=answer_content))
+                answer_content = f"{sample['answer']} Die Antwort lautet #### {sample['answer_number']} "
+                n_shot_messages.append(Message(role="assistant", content=answer_content))
+            elif language == "fr":
+                question_content = f"{sample['question']}"
+                n_shot_messages.append(Message(role="user", content=question_content))
 
-        question_message = Message(role="user", content=self._question_prompt(question))
+                answer_content = f"{sample['answer']} La réponse est #### {sample['answer_number']} "
+                n_shot_messages.append(Message(role="assistant", content=answer_content))
+            else:
+                raise ValueError("Invalid language")
+        question_message = Message(role="user", content=self._question_prompt(question, language))
         return n_shot_messages + [question_message]
 
     def is_correct(self, sample: EvalSample, answer: str) -> bool:
@@ -55,10 +67,10 @@ class MGSMNShot(EvalTask):
 
     @classmethod
     def extract_answer(cls, answer: str) -> str:
-        match = cls.ANS_RE.search(answer)
-        if match:
+         match = cls.ANS_RE.search(answer)
+         if match:
             match_str = match.group(1).strip()
             match_str = match_str.replace(",", "")
             return match_str
-        else:
+         else:
             return cls.INVALID_ANS

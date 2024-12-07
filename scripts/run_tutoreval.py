@@ -75,12 +75,15 @@ if __name__ == '__main__':
     eval_task: EvalTask = eval_task_class[args.dataset](dataset)
     models = {
         'Ethel': EthelModel,
+        'Llama': EthelModel,
         'Ollama': OllamaModel,
-        'Smol': SmolModel
+        'Smol': SmolModel,
     }
+
 
     model_names = {
         "Ethel": "swissai/ethel-70b-tutorchat",
+        "Llama": "swissai/ethel-70b-magpie",
         "Ollama": "llama3.2",
         "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct"
     }
@@ -103,8 +106,9 @@ if __name__ == '__main__':
     all_grades = []
     for ex in tqdm.tqdm(eval_task, total=len(eval_task)):
         tutor_response = model.generate(ex.messages)
+        print(tutor_response)
         grader_response, grades = eval_task.grade(ex, tutor_response, grader_model)
-        
+        print(grader_response)
 
         # Record the iteration data
         recorder.record({
@@ -113,7 +117,9 @@ if __name__ == '__main__':
             "tutor_response": tutor_response,
             "grader_response": grader_response,
             "presentation": grades[0],
-            "correctness": grades[1]
+            "correctness": grades[1],
+            "difficulty": ex.difficulty,
+            "domain" : ex.domain
         })
         all_grades.append((grades[0], grades[1]))
 
@@ -125,4 +131,4 @@ if __name__ == '__main__':
     print(f"Presentation: {sum([grade[0] for grade in all_grades])/len(all_grades)}")
     print(f"Correctness: {sum([grade[1] for grade in all_grades])/len(all_grades)}")
 
-    #recorder.save('evaluation_records.json')
+    recorder.save('evaluation_records.json')
