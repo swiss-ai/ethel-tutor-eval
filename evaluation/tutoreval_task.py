@@ -81,5 +81,5 @@ class TutorEvalTask(EvalTask):
     def extract_answer(cls, answer: str) -> str | List[float]:
         grades = [float(d) for d in re.findall(pattern=r':\s?(\d.*)/3', string=answer)]
         if len(grades) == 0:
-            grades = [0.0, 0.0]
+            grades = [-1.0, -1.0]
         return grades
