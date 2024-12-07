@@ -12,6 +12,26 @@ from models.ollama import OllamaModel
 from utils.config import Config
 from utils.recorder import Recorder
 
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from models.base_model import BaseModel, Message
+
+import json
+
+
+class Smollm135m(BaseModel):
+    def __init__(self):
+        self.checkpoint = "HuggingFaceTB/SmolLM-135M"
+        self.device = "cuda" 
+        self.tokenizer = AutoTokenizer.from_pretrained(self.checkpoint)
+        self.model = AutoModelForCausalLM.from_pretrained(self.checkpoint).to(self.device)
+
+    def generate(self, messages: list[Message]) -> Message:
+        prompt = " ".join([msg.content for msg in messages])
+        inputs = self.tokenizer.encode(prompt, return_tensors="pt").to(self.device)
+        outputs = self.model.generate(inputs, max_new_tokens=128)
+        response = self.tokenizer.decode(outputs[0])
+        return Message(role="assistant", content=response)
+
 if __name__ == '__main__':
     random.seed(239)
 
@@ -56,7 +76,8 @@ if __name__ == '__main__':
 
     models = {
         'Ethel': EthelModel,
-        'Ollama': OllamaModel
+        'Ollama': OllamaModel,
+        'Smollm': Smollm135m
     }
 
     try:
@@ -72,7 +93,12 @@ if __name__ == '__main__':
 
     is_correct_labels = []
 
-    for ex in tqdm.tqdm(eval_task, total=min(len(eval_task), args.limit)):
+    total = args.limit if args.limit is not None else len(eval_task)
+
+    if total is None:
+        raise ValueError("Either provide a valid --limit or ensure eval_task supports len().")
+
+    for ex in tqdm.tqdm(eval_task, total=total):
         resp = model.generate(ex.messages)
         generated_answer = eval_task.extract_answer(resp.content)
         is_correct = eval_task.is_correct(ex, generated_answer)
@@ -92,7 +118,17 @@ if __name__ == '__main__':
         if args.limit is not None and i >= args.limit:
             break
 
-    print(f"Evaluated model {args.model} on dataset {args.dataset} with {len(is_correct_labels)} examples:")
-    print(f"Accuracy: {sum(is_correct_labels) / len(is_correct_labels)}")
 
-    recorder.save('evaluation_records.json')
+    # Save evaluation results in JSON format
+    json_filename = 'evaluation_results.json'
+    recorder.save('evaluation_results.json')
+
+    # with open(json_filename, mode='w', encoding='utf-8') as json_file:
+    #     json.dump(recorder.records, json_file, ensure_ascii=False, indent=4)
+    #
+    # print(f"Results saved to {json_filename}")
+    #
+    # print(f"Evaluated model {args.model} on dataset {args.dataset} with {len(is_correct_labels)} examples:")
+    # print(f"Accuracy: {sum(is_correct_labels) / len(is_correct_labels)}")
+    #
+    # recorder.save('evaluation_records.json')
