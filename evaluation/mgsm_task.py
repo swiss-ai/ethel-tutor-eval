@@ -39,7 +39,7 @@ class MGSMNShot(NShotTask):
 
     def _generate_n_shot_messages(self, question: str, language:str) -> List[Message]:
         if len(self._n_shot_samples) == 0:
-            self._n_shot_samples = random.sample(self.dataset.get_train_samples(language), self.n)
+            self._n_shot_samples = random.sample(self.dataset.get_train_samples(), self.n)
 
         
         n_shot_messages = []
@@ -62,14 +62,26 @@ class MGSMNShot(NShotTask):
         return n_shot_messages + [question_message]
 
     def is_correct(self, sample: EvalSample, answer: str) -> bool:
+        #print(self.extract_answer(sample.target), answer)
         return self.extract_answer(sample.target) == answer
 
     @classmethod
     def extract_answer(cls, answer: str) -> str:
+         #print("answer", answer)
          match = cls.ANS_RE.search(answer)
          if match:
             match_str = match.group(1).strip()
             match_str = match_str.replace(",", "")
+            return match_str
+         parts = answer.split('Die Antwort')
+         if len(parts) == 1: ## TODO! Language check, not like this
+            parts = answer.split('La réponse')
+         last_part = parts[-1].strip()
+
+        # Step 3: Extract the number using regex
+         match = re.search(r'-?\d+(\.\d+)?', last_part)
+         if match:
+            match_str = match.group()
             return match_str
          else:
             return cls.INVALID_ANS

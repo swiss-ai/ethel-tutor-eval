@@ -12,7 +12,7 @@ sys.path.append(parent_dir)
 from our_datasets.base_dataset import BaseDataset, Message
 from our_datasets.gsm8k_dataset import GSM8K
 from our_datasets.math_dataset import MATH
-from our_datasets.mgsm_dataset import MGSM
+from our_datasets.mgsm_dataset import MGSM_DE, MGSM_FR
 from evaluation.base_eval_task import EvalTask, NShotTask
 from evaluation.gsm8k_task import GSM8KNShot
 from evaluation.mgsm_task import MGSMNShot
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
-    parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH, MGSM")
+    parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH, MGSM_DE or MGSM_FR")
     parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama")
     parser.add_argument("--model_name", required=False, help="The model name to use for model API")
     parser.add_argument("--limit", type=int, default=None, help="Limit the number of iterations")
@@ -49,9 +49,9 @@ if __name__ == '__main__':
     datasets = {
         'GSM8K': GSM8K,
         'MATH': MATH,
-        'MGSM': MGSM,
+        'MGSM_DE': MGSM_DE,
+        'MGSM_FR': MGSM_FR
     }
-
     try:
         dataset_class = datasets[args.dataset]
     except KeyError:
@@ -68,7 +68,8 @@ if __name__ == '__main__':
     eval_task_class = {
         'GSM8K': GSM8KNShot,
         'MATH': MATHFewShot,
-        'MGSM': MGSMNShot,
+        'MGSM_DE': MGSMNShot,
+        'MGSM_FR': MGSMNShot,
     }[args.dataset]
 
     if issubclass(eval_task_class, NShotTask):
@@ -103,7 +104,7 @@ if __name__ == '__main__':
         output_dir=config.get_records_path(),
         dataset_name=args.dataset,
         eval_task_name=eval_task.__class__.__name__,
-        model_name=f"{args.model}/{args.model_name}" if args.model_name else f"{args.model}"
+        model_name=f"{args.model}/{args.model_name}/{args.n_shot}" if args.model_name else f"{args.model}"
     )
 
     i = 0
@@ -130,6 +131,7 @@ if __name__ == '__main__':
                 break
             continue
         generated_answer = eval_task.extract_answer(resp.content)
+        #print("Generated Answer: ", generated_answer)
         is_correct = eval_task.is_correct(ex, generated_answer)
 
         is_correct_labels.append(is_correct)
@@ -153,7 +155,8 @@ if __name__ == '__main__':
         i += 1
         if args.limit is not None and i >= args.limit:
             break
-
+    if len(is_correct_labels) == 0:
+        raise ValueError(f"No items was evaluated, please run the script again to create the results")
     print(f"Evaluated model {args.model} on dataset {args.dataset} with {len(is_correct_labels)} examples:")
     print(f"Accuracy: {sum(is_correct_labels) / len(is_correct_labels)}")
 
