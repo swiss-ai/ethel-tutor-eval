@@ -7,7 +7,7 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 
 ## if you are in scripts folder
-os.chdir(parent_dir)
+#os.chdir(parent_dir)
 # os.chdir(parent_dir)
 
 from utils.config import Config
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         model = model_class(model_name = args.model_name)
 
     if args.grader_model_name is None:
-        grader_model = grader_model_class()
+        grader_model = grader_model_class(model_name = model_names[args.model])
     else:
         grader_model = grader_model_class(model_name = args.grader_model_name)
 
@@ -124,16 +124,11 @@ if __name__ == '__main__':
     for ex in tqdm.tqdm(eval_task, total=len(eval_task)):
         tutor_response = model.generate(ex.messages)
         grader_response, grades = eval_task.grade(ex, tutor_response, grader_model)
-
-        recorder.record({
-            "input": [m.to_dict() for m in ex.messages],
-            "key_points": ex.target,
-            "tutor_response": tutor_response.content,
         # Record the iteration data
         recorder.record({
             "input": [m.to_dict() for m in ex.messages],
             "key_points": ex.target,
-            "tutor_response": tutor_response,
+            "tutor_response": tutor_response.content,
             "grader_response": grader_response,
             "presentation": grades[0],
             "correctness": grades[1],

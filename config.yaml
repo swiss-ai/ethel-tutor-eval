@@ -3,6 +3,7 @@ our_datasets:
   math: "math/"
   tutoreval: "tutoreval/"
   mgsm: "mgsm/"
+  grader: "grader/"
 
 models:
   llama: "http://api.llama.com"
