@@ -45,8 +45,14 @@ class EthelModel(BaseModel):
         response = client.chat.completions.create(
             model=self._model_name,
             messages=messages,
-            stream=False,
-            timeout=120
+            stream=True,
+            #timeout=120
         )
-        content = response.choices[0].message.content
+        """
+        """
+        content = ""
+        for chunk in response:
+            if len(chunk.choices) > 0 and chunk.choices[0].delta.content:
+                content += chunk.choices[0].delta.content
+        #content = response.choices[0].message.content
         return Message(role="assistant", content=content)

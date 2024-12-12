@@ -40,14 +40,8 @@ class Grader(BaseDataset):
         with open(dataset_path +'result_samples_to_grade.json') as f:
             json_file = json.load(f)
         self._test_samples = [item for item in json_file]
-        #self._train_samples = read_jsonl(os.path.join(dataset_path, 'train.jsonl'))
 
     def get_test_samples(self) -> List:
-        dataset_path = self._config.get_dataset_path(self.config_name())
-        with open(dataset_path +'result_samples_to_grade.json') as f:
-            json_file = json.load(f)
-        self._test_samples = [item for item in json_file]
-        ## TODO: THIS IS A MASS! FIX IT
         return self._test_samples
 
     def get_train_samples(self) -> List:
