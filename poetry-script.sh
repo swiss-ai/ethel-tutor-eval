@@ -39,8 +39,6 @@ python --version
 # Use the specified Python version for Poetry's virtual environment
 poetry env use python3.9
 
-# Navigate to the project directory (replace with your project path)
-cd /path/to/your/project
 
 # Install project dependencies using Poetry
 poetry install
