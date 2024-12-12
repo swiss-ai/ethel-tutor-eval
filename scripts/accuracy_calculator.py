@@ -36,19 +36,25 @@ if __name__ == '__main__':
 
 
     args = parser.parse_args()
+    eval_task_class = {
+        'GSM8K': 'GSM8KNShot',
+        'MATH': "MATHFewShot",
+        'MGSM_DE': "MGSMNShot",
+        'MGSM_FR': "MGSMNShot",
+    }
 
-    json_path =f"{args.model}/{args.model_name}/{args.n_shot}" if args.model_name else f"{args.model}"
-    if not os.path.exists(f"records/{args.dataset}/{json_path}.json"):
-        raise ValueError(f"Record file not found, please run the script to create the results")
+    json_path =f"records/{args.dataset}/{eval_task_class[args.dataset]}/{args.model}/{args.model_name}/{args.n_shot}/evaluation_records.json" if args.model_name else f"{args.model}"
+    if not os.path.exists(json_path):
+        raise ValueError(f"Record file {json_path} not found, please run the script to create the results")
     
-    with open(f"records/{args.dataset}/{json_path}.json", "r") as f:
+    with open(json_path, "r") as f:
         data = json.load(f)
     
     if len(data) == 0:
         raise ValueError(f"Record file is empty, please run the script to create the results")
     
     total_items = len(data)
-    is_correct_items = sum(1 for item in data if item.get('is_correct') == "true")
+    is_correct_items = sum(1 for item in data if item.get('is_correct') == True)
 
     if total_items == 0:
         raise ValueError(f"No items found in the record file")

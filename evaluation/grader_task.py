@@ -64,7 +64,7 @@ class GraderTask(EvalTask):
         for ex in self.dataset.get_test_samples():
             #query = self._template.replace("{{QUESTION}}", ex['question']).replace("{{CHAPTER}}", ex['chapter'])
             answer = ex.get('answer')
-            all_key_points = ex.get('key_points')
+            all_key_points = ex.get('original_key_points')
             message = self.generate_grader_prompt(answer, all_key_points)
             target = ex.get('key_points_mask')
             target.remove("_")

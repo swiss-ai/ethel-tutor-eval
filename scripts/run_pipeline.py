@@ -89,6 +89,9 @@ if __name__ == '__main__':
         },
         'Ollama': {
             'model_name': args.model_name
+        },
+        'Smol': {
+            'model_name': 'HuggingFaceTB/SmolLM-1.7B-Instruct'
         }
     }
 
