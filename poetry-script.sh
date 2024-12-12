@@ -12,12 +12,20 @@ if ! command -v pyenv &> /dev/null
 then
     echo "pyenv not found. Installing pyenv..."
     curl https://pyenv.run | bash
-    # Add pyenv to bash profile or zsh profile
-    echo -e 'export PATH="$HOME/.pyenv/bin:$PATH"\n' \
+
+    # Initialize pyenv by adding configuration to the appropriate files
+    echo -e 'export PYENV_ROOT="$HOME/.pyenv"\n' \
+            'export PATH="$PYENV_ROOT/bin:$PATH"\n' \
             'eval "$(pyenv init --path)"\n' \
-            'eval "$(pyenv init -)"\n' >> ~/.bashrc
-    # Reload shell configuration
-    source ~/.bashrc
+            'eval "$(pyenv init -)"\n' \
+            'eval "$(pyenv virtualenv-init -)"\n' >> ~/.bashrc
+
+    # Source the bashrc file to update the shell environment for this script
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
 fi
 
 # Install Python 3.9.20 using pyenv
