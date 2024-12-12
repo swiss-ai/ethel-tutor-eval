@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "tutor-llm"
+version = "0.1.0"
+description = ""
+authors = ["pavlov200912 <pavlov200912@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.9.20"
+tqdm = "^4.67.1"
+pyyaml = "^6.0.2"
+requests = "^2.32.3"
+datasets = "^3.2.0"
+sympy = "1.13.1"
+openai = "^1.57.2"
+transformers = "^4.47.0"
+torch = "^2.5.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
