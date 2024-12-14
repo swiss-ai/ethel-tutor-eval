@@ -1,0 +1,14 @@
+{
+    "easy": {
+        "mean_correctness": 1.2,
+        "mean_presentation": 1.5
+    },
+    "medium": {
+        "mean_correctness": 1.2,
+        "mean_presentation": 2.1
+    },
+    "hard": {
+        "mean_correctness": 0.4,
+        "mean_presentation": 1.4
+    }
+}

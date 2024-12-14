@@ -1,0 +1,24 @@
+[
+{
+    "chemistry": {
+        "mean_correctness": 0.3,
+        "mean_presentation": 2.0
+    },
+    "biology": {
+        "mean_correctness": 3.0,
+        "mean_presentation": 3.0
+    },
+    "physics": {
+        "mean_correctness": 1.4,
+        "mean_presentation": 1.0
+    },
+    "environmental science": {
+        "mean_correctness": 1.9,
+        "mean_presentation": 1.0
+    },
+    "mathematics": {
+        "mean_correctness": 3.0,
+        "mean_presentation": 3.0
+    }
+}
+]
