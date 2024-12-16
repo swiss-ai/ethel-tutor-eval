@@ -83,13 +83,14 @@ if __name__ == '__main__':
         'Ollama': {
             'model_name': args.grader_model_name
         }
+
     }
 
     try:
         model_class = models[args.grader_model]
         model_args = model_args_dict[args.grader_model]
     except KeyError:
-        raise ValueError(f"Invalid model: {args.grader_.model}. Supported models: {list(models.keys())}")
+        raise ValueError(f"Invalid model: {args.grader_model}. Supported models: {list(models.keys())}")
 
     model = model_class(**model_args)
 
