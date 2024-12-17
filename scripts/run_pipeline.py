@@ -5,6 +5,9 @@ import random
 import tqdm
 import sys
 import os
+
+from models.openai_model import OpenAIModel
+
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 
@@ -33,7 +36,7 @@ if __name__ == '__main__':
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
     parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH, MGSM_DE or MGSM_FR")
-    parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama")
+    parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama, OpenAI")
     parser.add_argument("--model_name", required=False, help="The model name to use for model API")
     parser.add_argument("--limit", type=int, default=None, help="Limit the number of iterations")
     parser.add_argument("--n_shot", type=int, default=8, help="Number of n-shot samples")
@@ -81,6 +84,7 @@ if __name__ == '__main__':
         'Ethel': EthelModel,
         'Ollama': OllamaModel,
         'Smol': SmolModel,
+        'OpenAI': OpenAIModel,
     }
 
     model_args_dict = {
@@ -92,6 +96,9 @@ if __name__ == '__main__':
         },
         'Smol': {
             'model_name': 'HuggingFaceTB/SmolLM-1.7B-Instruct'
+        },
+        'OpenAI': {
+            'model_name': args.model_name,
         }
     }
 
@@ -134,7 +141,7 @@ if __name__ == '__main__':
                 break
             continue
         generated_answer = eval_task.extract_answer(resp.content)
-        #print("Generated Answer: ", generated_answer)
+
         is_correct = eval_task.is_correct(ex, generated_answer)
 
         is_correct_labels.append(is_correct)
