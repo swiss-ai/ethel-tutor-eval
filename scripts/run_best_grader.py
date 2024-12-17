@@ -3,6 +3,9 @@ import random
 import tqdm
 import os
 import sys
+
+from models.openai_model import OpenAIModel
+
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 
@@ -74,6 +77,7 @@ if __name__ == '__main__':
         'Ethel': EthelModel,
         'Ollama': OllamaModel,
         'Smol': SmolModel,
+        'OpenAI': OpenAIModel
     }
 
     model_args_dict = {
@@ -82,8 +86,10 @@ if __name__ == '__main__':
         },
         'Ollama': {
             'model_name': args.grader_model_name
+        },
+        'OpenAI': {
+            'model_name': args.grader_model_name
         }
-
     }
 
     try:
