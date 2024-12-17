@@ -3,6 +3,9 @@ import random
 import tqdm
 import os
 import sys
+
+from models.openai_model import OpenAIModel
+
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 
@@ -81,6 +84,7 @@ if __name__ == '__main__':
         'Llama': EthelModel,
         'Ollama': OllamaModel,
         'Smol': SmolModel,
+        'OpenAI': OpenAIModel,
     }
 
 
@@ -88,7 +92,8 @@ if __name__ == '__main__':
         "Ethel": "swissai/ethel-70b-tutorchat",
         "Llama": "swissai/ethel-70b-magpie",
         "Ollama": "llama3.2",
-        "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct"
+        "Smol": "HuggingFaceTB/SmolLM-1.7B-Instruct",
+        "OpenAI": "gpt-4o"
     }
 
     try:
@@ -136,6 +141,10 @@ if __name__ == '__main__':
             "domain" : ex.domain
         })
         all_grades.append((grades[0], grades[1]))
+
+
+        if i % 100 == 0:
+            recorder.save('evaluation_records.json')
 
         i += 1
         if args.limit is not None and i >= args.limit:
