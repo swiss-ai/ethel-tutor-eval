@@ -21,25 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# The answer processing code inspired by https://github.com/wellecks/lm-evaluation-harness/blob/master/lm_eval/tasks/minerva_math.py
-"""
-    def __init__(self, dataset: BaseDataset):
-        self.dataset = dataset
-
-    @abstractmethod
-    def __iter__(self) -> Iterator[EvalSample]:
-        pass
-
-    @classmethod
-    def extract_answer(cls, answer: str) -> str:
-        pass
-
-    def is_correct(self, sample: EvalSample, answer: str) -> bool:
-        return answer == sample.target
-
-    def __len__(self):
-        return len(self.dataset.get_test_samples())
-"""
+# The grading processing code inspired by https://github.com/princeton-nlp/LM-Science-Tutor?tab=readme-ov-file
 
 
 class TutorEvalTask(EvalTask):

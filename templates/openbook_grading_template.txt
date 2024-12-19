@@ -9,26 +9,26 @@ CORRECTNESS: the AI correctly understands the question and the answer is true an
 Here is the textbook chapter used for this interaction: 
 
 """
-{chapter}
+{{CHAPTER}}
 """
 
 Here is the student's question: 
 
 """
-{question}
+{{QUESTION}}
 """
 
 To help you in your evaluation, we've compiled some ground-truth key points which a good AI system should cover in its answer. You MUST check that the AI's answer agrees with these key points. These key points have been checked by experts and are 100% correct. These key points are particularly useful for spotting CORRECTNESS errors.
 
 """
 Key points to cover:
-{key_points}
+{{KEY_POINTS}}
 """
 
 Here is the AI's answer:
 
 """
-{output}
+{{OUTPUT}}
 """
 
 Please present your scores as follows:

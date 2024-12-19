@@ -5,6 +5,8 @@ import sys
 from our_datasets.base_dataset import BaseDataset, EvalSample
 
 
+### An eval task handles the iteration over the evaluation samples
+### and also provides a method to extract the 'correct' answer from the sample
 class EvalTask(ABC):
     def __init__(self, dataset: BaseDataset):
         self.dataset = dataset
@@ -16,9 +18,6 @@ class EvalTask(ABC):
     @classmethod
     def extract_answer(cls, answer: str, language: str = "") -> str:
         pass
-
-    # def is_correct(self, sample: EvalSample, answer: str) -> bool:
-    #    return answer == sample.target
 
     def __len__(self):
         return len(self.dataset.get_test_samples())
