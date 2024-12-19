@@ -10,12 +10,14 @@ from models.base_model import BaseModel
 
 class EthelModel(BaseModel):
     def __init__(self, model_name: Optional[str]):
-        self._model_name = model_name if model_name is not None else "swissai/ethel-70b-pretrain"
+        self._model_name = (
+            model_name if model_name is not None else "swissai/ethel-70b-pretrain"
+        )
         self._api_key = self._get_api_key()
 
     @staticmethod
     def _get_api_key():
-        api_key = os.getenv('SWISSAI_API').strip() ## On windows very important!
+        api_key = os.getenv("SWISSAI_API").strip()  ## On windows very important!
         if not api_key:
             raise ValueError(
                 """
@@ -31,11 +33,7 @@ class EthelModel(BaseModel):
 
     def generate(self, messages: List[Message]) -> Message:
         messages = [
-            {
-                "role": message.role,
-                "content": message.content
-            }
-            for message in messages
+            {"role": message.role, "content": message.content} for message in messages
         ]
 
         client = openai.Client(

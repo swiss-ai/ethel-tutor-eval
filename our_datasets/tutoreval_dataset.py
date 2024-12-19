@@ -42,7 +42,7 @@ class TutorEval(BaseDataset):
     def load(self):
         dataset_path = self._config.get_dataset_path(self.config_name())
         self._test_samples = load_from_disk(dataset_path)
-        #self._train_samples = read_jsonl(os.path.join(dataset_path, 'train.jsonl'))
+        # self._train_samples = read_jsonl(os.path.join(dataset_path, 'train.jsonl'))
 
     def get_test_samples(self) -> List:
         return self._test_samples
@@ -51,4 +51,6 @@ class TutorEval(BaseDataset):
         return []
 
     def choose_book(self, closed_book: bool = True):
-        self._test_samples = self._test_samples.filter(lambda x: x['closed_book'] == bool(closed_book))
+        self._test_samples = self._test_samples.filter(
+            lambda x: x["closed_book"] == bool(closed_book)
+        )

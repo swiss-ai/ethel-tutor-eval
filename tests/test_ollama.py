@@ -16,9 +16,7 @@ class TestOLlamaModel(unittest.TestCase):
         expected_content = "Hi there!"
 
         mock_response = Mock()
-        mock_response.json.return_value = {
-            "message": {"content": expected_content}
-        }
+        mock_response.json.return_value = {"message": {"content": expected_content}}
         mock_response.raise_for_status = Mock()
 
         mock_post.return_value = mock_response

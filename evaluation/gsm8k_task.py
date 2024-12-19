@@ -9,7 +9,6 @@ from evaluation.base_eval_task import EvalTask, NShotTask
 from our_datasets.base_dataset import BaseDataset, Message, EvalSample
 
 
-
 class GSM8KNShot(NShotTask):
     ANS_RE = re.compile(r"#### (-?[0-9.,]+)")
     INVALID_ANS = "[invalid]"
@@ -17,7 +16,7 @@ class GSM8KNShot(NShotTask):
     def __init__(self, dataset: BaseDataset, n: int = 8):
         super().__init__(dataset, n)
 
-        if dataset.config_name() != 'gsm8k':
+        if dataset.config_name() != "gsm8k":
             raise ValueError("Can't run GSM8K N-shot evaluation on non-GSM8K dataset")
 
         self.n = n
@@ -26,8 +25,8 @@ class GSM8KNShot(NShotTask):
 
     def __iter__(self) -> Iterator[EvalSample]:
         for ex in self.dataset.get_test_samples():
-            n_shot = self._generate_n_shot_messages(ex['question'])
-            yield EvalSample(messages=n_shot, target=ex['answer'])
+            n_shot = self._generate_n_shot_messages(ex["question"])
+            yield EvalSample(messages=n_shot, target=ex["answer"])
 
     @staticmethod
     def _question_prompt(question: str):
@@ -39,7 +38,9 @@ class GSM8KNShot(NShotTask):
 
     def _generate_n_shot_messages(self, question: str) -> List[Message]:
         if len(self._n_shot_samples) == 0:
-            self._n_shot_samples = random.sample(self.dataset.get_train_samples(), self.n)
+            self._n_shot_samples = random.sample(
+                self.dataset.get_train_samples(), self.n
+            )
 
         n_shot_messages = []
         for sample in self._n_shot_samples:

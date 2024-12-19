@@ -17,14 +17,14 @@ class EvalTask(ABC):
     def extract_answer(cls, answer: str, language: str = "") -> str:
         pass
 
-    #def is_correct(self, sample: EvalSample, answer: str) -> bool:
+    # def is_correct(self, sample: EvalSample, answer: str) -> bool:
     #    return answer == sample.target
 
     def __len__(self):
         return len(self.dataset.get_test_samples())
 
+
 class NShotTask(EvalTask, ABC):
     def __init__(self, dataset: BaseDataset, n: int) -> None:
         super().__init__(dataset)
         self.n = n
-

@@ -35,26 +35,25 @@ class MGSM_DE(BaseDataset):
             return
 
         os.makedirs(dataset_path, exist_ok=True)
-        os.makedirs(os.path.join(dataset_path, 'de'), exist_ok=True)
+        os.makedirs(os.path.join(dataset_path, "de"), exist_ok=True)
 
         logger.info("Downloading MGSM_DE dataset")
-        
+
         de = load_dataset("juletxara/mgsm", "de")
 
-        de.save_to_disk(os.path.join(dataset_path, 'de'))
-
+        de.save_to_disk(os.path.join(dataset_path, "de"))
 
         logger.info("Downloaded MGSM_DE dataset!")
 
     def load(self):
         dataset_path = self._config.get_dataset_path(self.config_name())
-        de_samples = load_from_disk(os.path.join(dataset_path, 'de'))
+        de_samples = load_from_disk(os.path.join(dataset_path, "de"))
 
-        train_de = de_samples['train'].to_pandas()
+        train_de = de_samples["train"].to_pandas()
         train_de["language"] = "de"
         self._train_samples = train_de.to_dict(orient="records")
 
-        test_de = de_samples['test'].to_pandas()
+        test_de = de_samples["test"].to_pandas()
         test_de["language"] = "de"
 
         test_dataframes = test_de
@@ -66,7 +65,7 @@ class MGSM_DE(BaseDataset):
 
     def get_train_samples(self) -> List:
         return self._train_samples
-    
+
 
 class MGSM_FR(BaseDataset):
     def __init__(self, config: Config):
@@ -87,26 +86,25 @@ class MGSM_FR(BaseDataset):
             return
 
         os.makedirs(dataset_path, exist_ok=True)
-        os.makedirs(os.path.join(dataset_path, 'fr'), exist_ok=True)
+        os.makedirs(os.path.join(dataset_path, "fr"), exist_ok=True)
 
         logger.info("Downloading MGSM_FR dataset")
-        
+
         fr = load_dataset("juletxara/mgsm", "fr")
 
-        fr.save_to_disk(os.path.join(dataset_path, 'fr'))
-
+        fr.save_to_disk(os.path.join(dataset_path, "fr"))
 
         logger.info("Downloaded MGSM_FR dataset!")
 
     def load(self):
         dataset_path = self._config.get_dataset_path(self.config_name())
-        fr_samples = load_from_disk(os.path.join(dataset_path, 'fr'))
+        fr_samples = load_from_disk(os.path.join(dataset_path, "fr"))
 
-        train_fr = fr_samples['train'].to_pandas()
+        train_fr = fr_samples["train"].to_pandas()
         train_fr["language"] = "fr"
         self._train_samples = train_fr.to_dict(orient="records")
 
-        test_fr = fr_samples['test'].to_pandas()
+        test_fr = fr_samples["test"].to_pandas()
         test_fr["language"] = "fr"
 
         test_dataframes = test_fr
@@ -118,4 +116,3 @@ class MGSM_FR(BaseDataset):
 
     def get_train_samples(self) -> List:
         return self._train_samples
-    

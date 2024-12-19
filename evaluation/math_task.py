@@ -22,18 +22,21 @@ logger = logging.getLogger(__name__)
 
 # The answer processing code inspired by https://github.com/wellecks/lm-evaluation-harness/blob/master/lm_eval/tasks/minerva_math.py
 
+
 class MATHFewShot(EvalTask):
     def __init__(self, dataset: BaseDataset):
         super().__init__(dataset)
 
-        if dataset.config_name() != 'math':
+        if dataset.config_name() != "math":
             raise ValueError("Can't run MATH N-shot evaluation on non-MATH dataset")
 
     def __iter__(self) -> Iterator[EvalSample]:
         for ex in self.dataset.get_test_samples():
-            n_shot = self._generate_n_shot_messages(ex['question'])
+            n_shot = self._generate_n_shot_messages(ex["question"])
             description = f"{ex['level']}|{ex['category']}"
-            yield EvalSample(messages=n_shot, target=ex['answer'], description=description)
+            yield EvalSample(
+                messages=n_shot, target=ex["answer"], description=description
+            )
 
     def _generate_n_shot_messages(self, question: str) -> List[Message]:
         n_shot_messages = []
@@ -67,7 +70,7 @@ class MATHFewShot(EvalTask):
             {
                 "question": "If the system of equations\n\n\\begin{align*}\n6x-4y&=a,\\\n6y-9x &=b.\n\\end{align*}has a solution $(x, y)$ where $x$ and $y$ are both nonzero,\nfind $\\frac{a}{b},$ assuming $b$ is nonzero.",
                 "answer": "If we multiply the first equation by $-\\frac{3}{2}$, we obtain\n\n$$6y-9x=-\\frac{3}{2}a.$$Since we also know that $6y-9x=b$, we have\n\n$$-\\frac{3}{2}a=b\\Rightarrow\\frac{a}{b}=\\boxed{-\\frac{2}{3}}.$$\nFinal Answer: The final answer is $-\\frac{2}{3}$. I hope it is correct.",
-            }
+            },
         ]
 
     @classmethod
@@ -75,7 +78,9 @@ class MATHFewShot(EvalTask):
         return normalize_final_answer(extract_final_answer(answer))
 
     def is_correct(self, sample: EvalSample, answer: str) -> bool:
-        sample_answer = normalize_final_answer(remove_boxed(last_boxed_only_string(sample.target)))
+        sample_answer = normalize_final_answer(
+            remove_boxed(last_boxed_only_string(sample.target))
+        )
         generated_answer = self.extract_answer(answer)
 
         return is_equiv(generated_answer, sample_answer)
@@ -106,7 +111,7 @@ def last_boxed_only_string(string: str) -> Optional[str]:
     if right_brace_idx is None:
         retval = None
     else:
-        retval = string[idx: right_brace_idx + 1]
+        retval = string[idx : right_brace_idx + 1]
 
     return retval
 
@@ -116,7 +121,7 @@ def remove_boxed(s: str) -> str:
         left = "\\boxed "
         if s[: len(left)] != left:
             raise ValueError(f"Expected {left} but got {s[: len(left)]}")
-        return s[len(left):]
+        return s[len(left) :]
 
     left = "\\boxed{"
 
@@ -126,7 +131,7 @@ def remove_boxed(s: str) -> str:
     if s[-1] != "}":
         raise ValueError("Expected }" + f" but got {s[-1]}")
 
-    return s[len(left): -1]
+    return s[len(left) : -1]
 
 
 class SignalTimeout:
@@ -155,9 +160,9 @@ def is_equiv(x1: str, x2: str) -> bool:
                 parsed_x1 = parse_latex(x1)
                 parsed_x2 = parse_latex(x2)
             except (
-                    sympy.parsing.latex.errors.LaTeXParsingError,
-                    sympy.SympifyError,
-                    TypeError,
+                sympy.parsing.latex.errors.LaTeXParsingError,
+                sympy.SympifyError,
+                TypeError,
             ):
                 logger.debug(f"Couldn't parse one of {x1} or {x2}")
                 return False

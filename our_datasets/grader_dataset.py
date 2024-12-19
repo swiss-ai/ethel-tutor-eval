@@ -37,7 +37,7 @@ class Grader(BaseDataset):
 
     def load(self):
         dataset_path = self._config.get_dataset_path(self.config_name())
-        with open(dataset_path +'result_samples_to_grade.json') as f:
+        with open(dataset_path + "result_samples_to_grade.json") as f:
             json_file = json.load(f)
         self._test_samples = [item for item in json_file]
 
@@ -48,4 +48,8 @@ class Grader(BaseDataset):
         return []
 
     def choose_book(self, closed_book: bool = True):
-        self._test_samples = [json_item for json_item in self._test_samples if json_item.get('closed_book') == bool(closed_book)]
+        self._test_samples = [
+            json_item
+            for json_item in self._test_samples
+            if json_item.get("closed_book") == bool(closed_book)
+        ]

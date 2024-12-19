@@ -30,35 +30,43 @@ from utils.recorder import Recorder
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     random.seed(239)
 
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run Dataset Evaluation")
-    parser.add_argument("--dataset", required=True, help="The dataset to use for evaluation: GSM8K, MATH, MGSM_DE or MGSM_FR")
-    parser.add_argument("--model", required=True, help="The model to use for evaluation: Ethel, Ollama, OpenAI")
-    parser.add_argument("--model_name", required=False, help="The model name to use for model API")
-    parser.add_argument("--limit", type=int, default=None, help="Limit the number of iterations")
-    parser.add_argument("--n_shot", type=int, default=8, help="Number of n-shot samples")
+    parser.add_argument(
+        "--dataset",
+        required=True,
+        help="The dataset to use for evaluation: GSM8K, MATH, MGSM_DE or MGSM_FR",
+    )
+    parser.add_argument(
+        "--model",
+        required=True,
+        help="The model to use for evaluation: Ethel, Ollama, OpenAI",
+    )
+    parser.add_argument(
+        "--model_name", required=False, help="The model name to use for model API"
+    )
+    parser.add_argument(
+        "--limit", type=int, default=None, help="Limit the number of iterations"
+    )
+    parser.add_argument(
+        "--n_shot", type=int, default=8, help="Number of n-shot samples"
+    )
 
     args = parser.parse_args()
 
-    config = Config(
-        config_path='config.yaml',
-        dataset_dir='data'
-    )
+    config = Config(config_path="config.yaml", dataset_dir="data")
 
     # Choose dataset class to work with
-    datasets = {
-        'GSM8K': GSM8K,
-        'MATH': MATH,
-        'MGSM_DE': MGSM_DE,
-        'MGSM_FR': MGSM_FR
-    }
+    datasets = {"GSM8K": GSM8K, "MATH": MATH, "MGSM_DE": MGSM_DE, "MGSM_FR": MGSM_FR}
     try:
         dataset_class = datasets[args.dataset]
     except KeyError:
-        raise ValueError(f"Invalid dataset: {args.dataset}. Supported datasets: {list(datasets.keys())}")
+        raise ValueError(
+            f"Invalid dataset: {args.dataset}. Supported datasets: {list(datasets.keys())}"
+        )
 
     # Define dataset instance and download if necessary
     dataset: BaseDataset = dataset_class(config)
@@ -69,10 +77,10 @@ if __name__ == '__main__':
 
     # Run Dataset Evaluation
     eval_task_class = {
-        'GSM8K': GSM8KNShot,
-        'MATH': MATHFewShot,
-        'MGSM_DE': MGSMNShot,
-        'MGSM_FR': MGSMNShot,
+        "GSM8K": GSM8KNShot,
+        "MATH": MATHFewShot,
+        "MGSM_DE": MGSMNShot,
+        "MGSM_FR": MGSMNShot,
     }[args.dataset]
 
     if issubclass(eval_task_class, NShotTask):
@@ -81,32 +89,28 @@ if __name__ == '__main__':
         eval_task: EvalTask = eval_task_class(dataset)
 
     models = {
-        'Ethel': EthelModel,
-        'Ollama': OllamaModel,
-        'Smol': SmolModel,
-        'OpenAI': OpenAIModel,
+        "Ethel": EthelModel,
+        "Ollama": OllamaModel,
+        "Smol": SmolModel,
+        "OpenAI": OpenAIModel,
     }
 
     model_args_dict = {
-        'Ethel': {
-            'model_name': args.model_name
+        "Ethel": {"model_name": args.model_name},
+        "Ollama": {"model_name": args.model_name},
+        "Smol": {"model_name": "HuggingFaceTB/SmolLM-1.7B-Instruct"},
+        "OpenAI": {
+            "model_name": args.model_name,
         },
-        'Ollama': {
-            'model_name': args.model_name
-        },
-        'Smol': {
-            'model_name': 'HuggingFaceTB/SmolLM-1.7B-Instruct'
-        },
-        'OpenAI': {
-            'model_name': args.model_name,
-        }
     }
 
     try:
         model_class = models[args.model]
         model_args = model_args_dict[args.model]
     except KeyError:
-        raise ValueError(f"Invalid model: {args.model}. Supported models: {list(models.keys())}")
+        raise ValueError(
+            f"Invalid model: {args.model}. Supported models: {list(models.keys())}"
+        )
 
     model = model_class(**model_args)
 
@@ -114,7 +118,11 @@ if __name__ == '__main__':
         output_dir=config.get_records_path(),
         dataset_name=args.dataset,
         eval_task_name=eval_task.__class__.__name__,
-        model_name=f"{args.model}/{args.model_name}/{args.n_shot}" if args.model_name else f"{args.model}"
+        model_name=(
+            f"{args.model}/{args.model_name}/{args.n_shot}"
+            if args.model_name
+            else f"{args.model}"
+        ),
     )
 
     i = 0
@@ -131,11 +139,13 @@ if __name__ == '__main__':
             resp = model.generate(ex.messages)
         except:
             logger.error(f"Failed to generate response for sample {i}")
-            failed_samples.append({
-                "sample_id": i,
-                "input": [m.to_dict() for m in ex.messages],
-                "target_answer": ex.target
-            })
+            failed_samples.append(
+                {
+                    "sample_id": i,
+                    "input": [m.to_dict() for m in ex.messages],
+                    "target_answer": ex.target,
+                }
+            )
             i += 1
             if args.limit is not None and i >= args.limit:
                 break
@@ -148,27 +158,33 @@ if __name__ == '__main__':
 
         # Record the iteration data
         #
-        recorder.record({
-            "input": [m.to_dict() for m in ex.messages],
-            "target_answer": ex.target,
-            "response": resp.content,
-            "generated_answer": generated_answer,
-            "is_correct": is_correct,
-            "description": ex.description,
-            "index": i,
-        })
+        recorder.record(
+            {
+                "input": [m.to_dict() for m in ex.messages],
+                "target_answer": ex.target,
+                "response": resp.content,
+                "generated_answer": generated_answer,
+                "is_correct": is_correct,
+                "description": ex.description,
+                "index": i,
+            }
+        )
 
         if i % 100 == 0:
-            recorder.save('evaluation_records.json')
-            recorder.save_failed(failed_samples, 'failed_evaluation_records.json')
+            recorder.save("evaluation_records.json")
+            recorder.save_failed(failed_samples, "failed_evaluation_records.json")
 
         i += 1
         if args.limit is not None and i >= args.limit:
             break
     if len(is_correct_labels) == 0:
-        raise ValueError(f"No items was evaluated, please run the script again to create the results")
-    print(f"Evaluated model {args.model} on dataset {args.dataset} with {len(is_correct_labels)} examples:")
+        raise ValueError(
+            f"No items was evaluated, please run the script again to create the results"
+        )
+    print(
+        f"Evaluated model {args.model} on dataset {args.dataset} with {len(is_correct_labels)} examples:"
+    )
     print(f"Accuracy: {sum(is_correct_labels) / len(is_correct_labels)}")
 
-    recorder.save('evaluation_records.json')
-    recorder.save_failed(failed_samples, 'failed_evaluation_records.json')
+    recorder.save("evaluation_records.json")
+    recorder.save_failed(failed_samples, "failed_evaluation_records.json")

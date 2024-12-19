@@ -37,7 +37,9 @@ class GSM8K(BaseDataset):
         os.makedirs(dataset_path, exist_ok=True)
 
         logger.info("Downloading GSM8k dataset")
-        dataset_url = 'https://github.com/openai/grade-school-math/archive/refs/heads/master.zip'
+        dataset_url = (
+            "https://github.com/openai/grade-school-math/archive/refs/heads/master.zip"
+        )
 
         response = requests.get(dataset_url)
         response.raise_for_status()
@@ -46,8 +48,13 @@ class GSM8K(BaseDataset):
         with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
             for member in zip_ref.namelist():
                 # We need to extract only files from the data directory
-                if member.startswith(os.path.join('grade-school-math-master', 'grade_school_math', 'data') + os.sep):
-                    if '.' not in member.split(os.sep)[-1]:
+                if member.startswith(
+                    os.path.join(
+                        "grade-school-math-master", "grade_school_math", "data"
+                    )
+                    + os.sep
+                ):
+                    if "." not in member.split(os.sep)[-1]:
                         continue  # ignore /data/ directory
                     # This will extract the file into the desired directory structure
                     zip_ref.extract(member, dataset_path)
@@ -56,7 +63,7 @@ class GSM8K(BaseDataset):
                     target_path = os.path.join(dataset_path, os.path.basename(member))
                     shutil.move(extracted_path, target_path)
 
-        extracted_main_dir = os.path.join(dataset_path, 'grade-school-math-master')
+        extracted_main_dir = os.path.join(dataset_path, "grade-school-math-master")
         if os.path.exists(extracted_main_dir):
             shutil.rmtree(extracted_main_dir)
 
@@ -64,8 +71,8 @@ class GSM8K(BaseDataset):
 
     def load(self):
         dataset_path = self._config.get_dataset_path(self.config_name())
-        self._test_samples = read_jsonl(os.path.join(dataset_path, 'test.jsonl'))
-        self._train_samples = read_jsonl(os.path.join(dataset_path, 'train.jsonl'))
+        self._test_samples = read_jsonl(os.path.join(dataset_path, "test.jsonl"))
+        self._train_samples = read_jsonl(os.path.join(dataset_path, "train.jsonl"))
 
     def get_test_samples(self) -> List:
         return self._test_samples
